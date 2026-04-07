@@ -1,0 +1,340 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Quicksand:wght@500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{
+  background:#1a0025;
+  border-radius:20px;
+  padding:18px 12px 24px;
+  min-height:520px;
+  position:relative;
+  overflow:hidden;
+  font-family:'Quicksand',sans-serif;
+}
+.star-bg{position:absolute;border-radius:50%;background:#fff;animation:twk ease-in-out infinite;}
+@keyframes twk{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.2;transform:scale(.4);}}
+.petal{position:absolute;border-radius:60% 0 60% 0;opacity:.5;animation:fall linear infinite;}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0);opacity:.6;}100%{transform:translateY(560px) rotate(400deg);opacity:0;}}
+
+/* ---- PUZZLE SCREEN ---- */
+#puzzle-screen{position:relative;z-index:5;}
+#puz-title{text-align:center;font-family:'Pacifico',cursive;font-size:1.5rem;color:#ffb3e6;margin-bottom:4px;letter-spacing:1px;}
+#puz-sub{text-align:center;font-size:.85rem;color:#e0a0ff;margin-bottom:14px;}
+#puz-hint{text-align:center;font-size:.78rem;color:#b07fcf;margin-bottom:10px;font-style:italic;}
+
+#puzzle-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  max-width:320px;margin:0 auto 16px;
+}
+.puz-btn{
+  background:linear-gradient(135deg,#6a00b8,#c0006a);
+  border:2px solid #ff69b4;border-radius:14px;
+  padding:14px 6px;cursor:pointer;text-align:center;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  color:#fff;
+}
+.puz-btn:hover:not(.solved){transform:scale(1.08);box-shadow:0 0 18px #ff69b480;}
+.puz-btn.solved{background:linear-gradient(135deg,#ff4d9a,#ffb3e6);border-color:#fff;cursor:default;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{0%{transform:scale(.4);}100%{transform:scale(1);}}
+.puz-icon{font-size:1.6rem;display:block;margin-bottom:4px;}
+.puz-label{font-size:.72rem;font-weight:700;color:#ffe0f7;letter-spacing:.5px;}
+.puz-check{position:absolute;top:4px;right:8px;font-size:1rem;opacity:0;transition:opacity .3s;}
+.puz-btn.solved .puz-check{opacity:1;}
+#puz-progress{text-align:center;font-size:.82rem;color:#ffb3e6;margin-bottom:8px;}
+#puz-bar-wrap{max-width:280px;margin:0 auto 14px;background:#3a0060;border-radius:20px;height:10px;overflow:hidden;border:1px solid #9b30ff;}
+#puz-bar{height:100%;background:linear-gradient(90deg,#ff69b4,#a855f7);border-radius:20px;transition:width .5s;}
+
+/* ---- UNLOCK ANIMATION ---- */
+#unlock-screen{display:none;position:relative;z-index:5;}
+#unlock-flash{
+  text-align:center;animation:flashIn .8s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes flashIn{0%{transform:scale(0) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+
+/* ---- BIRTHDAY CARD ---- */
+#card-screen{display:none;position:relative;z-index:5;}
+#card-inner{text-align:center;}
+#bday-name{font-family:'Pacifico',cursive;font-size:2rem;color:#ffb3e6;text-shadow:0 2px 12px #a855f7;letter-spacing:2px;margin-bottom:2px;}
+#bday-sub{font-size:.85rem;color:#e0a0ff;margin-bottom:10px;letter-spacing:1px;}
+
+/* Teddy */
+#teddy-wrap{display:flex;justify-content:center;margin:6px 0;}
+#teddy{cursor:pointer;position:relative;width:140px;height:160px;user-select:none;}
+#heart-pop{position:absolute;top:-28px;left:50%;transform:translateX(-50%) scale(0);font-size:26px;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:20;}
+#teddy:hover #heart-pop{transform:translateX(-50%) scale(1);}
+.ear{position:absolute;width:40px;height:40px;background:#8b4513;border-radius:50%;top:8px;}
+.ear-in{width:22px;height:22px;background:#d2691e;border-radius:50%;position:absolute;top:9px;left:9px;}
+.e-l{left:8px;}.e-r{right:8px;}
+.head{position:absolute;top:18px;left:16px;right:16px;height:98px;background:#8b4513;border-radius:50% 50% 44% 44%;z-index:2;}
+.eye{position:absolute;width:14px;height:14px;background:#1a0a00;border-radius:50%;top:32px;box-shadow:0 0 0 3px #d2691e;}
+.eye::after{content:'';position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;top:2px;left:2px;}
+.el{left:18px;}.er{right:18px;}
+.nose{position:absolute;width:18px;height:11px;background:#3d1a0a;border-radius:50% 50% 40% 40%;top:54px;left:50%;transform:translateX(-50%);}
+.mouth{position:absolute;top:67px;left:50%;transform:translateX(-50%);width:26px;height:9px;border-bottom:2.5px solid #3d1a0a;border-radius:0 0 50% 50%;}
+.blush{position:absolute;width:18px;height:10px;background:#ff80b0;border-radius:50%;top:60px;opacity:.55;}
+.bl{left:6px;}.br{right:6px;}
+.bow-wrap{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;}
+.bow-l,.bow-r{width:15px;height:10px;background:#ff1493;border-radius:50% 0 0 50%;}
+.bow-r{border-radius:0 50% 50% 0;}
+.bow-c{width:6px;height:6px;background:#c0005a;border-radius:50%;}
+.body{position:absolute;top:108px;left:12px;right:12px;height:50px;background:#7a3a10;border-radius:38% 38% 48% 48%;z-index:1;}
+.tummy{width:36px;height:26px;background:#c07040;border-radius:50%;position:absolute;top:10px;left:50%;transform:translateX(-50%);}
+.arm{position:absolute;width:24px;height:44px;background:#7a3a10;border-radius:50% 50% 38% 38%;top:120px;z-index:0;transition:transform .4s;}
+.al{left:6px;transform-origin:top center;transform:rotate(10deg);}
+.ar{right:6px;transform-origin:top center;transform:rotate(-10deg);}
+#teddy:hover .al{transform:rotate(32deg);}
+#teddy:hover .ar{transform:rotate(-32deg);}
+.leg{position:absolute;width:22px;height:32px;background:#6a2e08;border-radius:28% 28% 48% 48%;top:150px;z-index:1;}
+.ll{left:24px;}.lr{right:24px;}
+
+#wish-box{
+  background:rgba(255,255,255,.08);border:1px solid #ff69b4;border-radius:16px;
+  padding:12px 16px;margin:10px auto;max-width:320px;
+  font-size:.88rem;color:#ffe0f7;line-height:1.75;
+}
+#wish-box span{font-family:'Dancing Script',cursive;font-size:1.2rem;color:#ffb3e6;}
+#emoji-row{text-align:center;font-size:1.4rem;letter-spacing:5px;margin:8px 0;animation:twk 2s ease-in-out infinite;}
+#music-btn{
+  position:absolute;top:14px;right:14px;
+  background:rgba(255,105,180,.2);border:1.5px solid #ff69b4;
+  border-radius:50%;width:40px;height:40px;font-size:20px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:20;
+  transition:background .2s;color:#fff;
+}
+#music-btn:hover{background:rgba(255,105,180,.4);}
+
+/* confetti */
+.conf{position:absolute;width:7px;height:7px;border-radius:2px;opacity:0;pointer-events:none;}
+@keyframes cburst{0%{transform:translate(0,0) rotate(0);opacity:1;}100%{transform:translate(var(--cx),var(--cy)) rotate(720deg);opacity:0;}}
+
+/* popup */
+#popup{
+  display:none;position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:#2a003a;border:2px solid #ff69b4;border-radius:18px;
+  padding:20px 24px;z-index:50;text-align:center;min-width:210px;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+#popup p{color:#ffe0f7;font-size:.92rem;font-weight:700;margin-bottom:10px;line-height:1.6;}
+#popup button{background:#ff69b4;color:#fff;border:none;border-radius:16px;padding:7px 20px;cursor:pointer;font-size:.82rem;font-family:'Quicksand',sans-serif;font-weight:700;}
+</style>
+
+<div id="app">
+  <!-- Stars BG -->
+  <div class="star-bg" style="width:3px;height:3px;top:5%;left:10%;animation-duration:2s;"></div>
+  <div class="star-bg" style="width:2px;height:2px;top:12%;left:55%;animation-duration:3s;animation-delay:.5s;"></div>
+  <div class="star-bg" style="width:4px;height:4px;top:8%;right:15%;animation-duration:1.8s;animation-delay:1s;"></div>
+  <div class="star-bg" style="width:2px;height:2px;top:85%;left:20%;animation-duration:2.5s;animation-delay:.3s;"></div>
+  <div class="star-bg" style="width:3px;height:3px;top:75%;right:18%;animation-duration:2s;animation-delay:.8s;"></div>
+  <div class="star-bg" style="width:2px;height:2px;top:55%;left:5%;animation-duration:3.2s;animation-delay:1.2s;"></div>
+  <div class="star-bg" style="width:3px;height:3px;top:40%;right:6%;animation-duration:2.2s;"></div>
+
+  <!-- Petals -->
+  <div class="petal" style="width:10px;height:10px;background:#ff69b4;left:15%;animation-duration:6s;animation-delay:0s;"></div>
+  <div class="petal" style="width:8px;height:8px;background:#a855f7;left:40%;animation-duration:7s;animation-delay:1.5s;"></div>
+  <div class="petal" style="width:11px;height:11px;background:#ff9de2;left:70%;animation-duration:5.5s;animation-delay:.8s;"></div>
+  <div class="petal" style="width:7px;height:7px;background:#facc15;left:85%;animation-duration:8s;animation-delay:2s;"></div>
+
+  <button id="music-btn" onclick="toggleMusic()">🎵</button>
+
+  <!-- SCREEN 1: PUZZLE -->
+  <div id="puzzle-screen">
+    <div id="puz-title">🔐 Unlock Anusha's Birthday! 🎂</div>
+    <div id="puz-sub">Tap all 6 tiles to reveal a surprise 🎀</div>
+    <div id="puz-hint">Each tile hides a piece of her special day...</div>
+    <div id="puz-progress">0 / 6 unlocked ✨</div>
+    <div id="puz-bar-wrap"><div id="puz-bar" style="width:0%"></div></div>
+    <div id="puzzle-grid">
+      <div class="puz-btn" onclick="tapTile(0)" id="t0">
+        <span class="puz-icon">🌸</span>
+        <div class="puz-label">Flowers</div>
+        <span class="puz-check">✅</span>
+      </div>
+      <div class="puz-btn" onclick="tapTile(1)" id="t1">
+        <span class="puz-icon">🎂</span>
+        <div class="puz-label">Cake</div>
+        <span class="puz-check">✅</span>
+      </div>
+      <div class="puz-btn" onclick="tapTile(2)" id="t2">
+        <span class="puz-icon">💖</span>
+        <div class="puz-label">Love</div>
+        <span class="puz-check">✅</span>
+      </div>
+      <div class="puz-btn" onclick="tapTile(3)" id="t3">
+        <span class="puz-icon">🎈</span>
+        <div class="puz-label">Balloons</div>
+        <span class="puz-check">✅</span>
+      </div>
+      <div class="puz-btn" onclick="tapTile(4)" id="t4">
+        <span class="puz-icon">🧸</span>
+        <div class="puz-label">Teddy</div>
+        <span class="puz-check">✅</span>
+      </div>
+      <div class="puz-btn" onclick="tapTile(5)" id="t5">
+        <span class="puz-icon">🌟</span>
+        <div class="puz-label">Stars</div>
+        <span class="puz-check">✅</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: UNLOCK FLASH -->
+  <div id="unlock-screen">
+    <div id="unlock-flash" style="padding:30px 10px;text-align:center;">
+      <div style="font-size:3.5rem;margin-bottom:10px;">🎉</div>
+      <div style="font-family:'Pacifico',cursive;font-size:1.8rem;color:#ffb3e6;margin-bottom:8px;">Unlocked!</div>
+      <div style="color:#e0a0ff;font-size:.95rem;margin-bottom:20px;">Opening Anusha's Birthday Surprise...</div>
+      <div id="count-bar-wrap" style="max-width:260px;margin:0 auto;background:#3a0060;border-radius:20px;height:12px;overflow:hidden;border:1px solid #9b30ff;">
+        <div id="count-bar" style="height:100%;background:linear-gradient(90deg,#ff69b4,#a855f7);border-radius:20px;width:0%;transition:width .1s;"></div>
+      </div>
+      <div id="count-num" style="color:#ffb3e6;font-size:1rem;margin-top:8px;font-weight:700;">0%</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: BIRTHDAY CARD -->
+  <div id="card-screen">
+    <div id="card-inner">
+      <div id="bday-name">Happy Birthday, Anusha! 🎉</div>
+      <div id="bday-sub">✨ Queen of the Day ✨</div>
+      <div id="emoji-row">🌸 💖 🌟 💖 🌸</div>
+
+      <!-- Teddy -->
+      <div id="teddy-wrap">
+        <div id="teddy" onclick="teddyTap()" title="Tap me!">
+          <div id="heart-pop">💖</div>
+          <div class="ear e-l"><div class="ear-in"></div></div>
+          <div class="ear e-r"><div class="ear-in"></div></div>
+          <div class="head">
+            <div class="eye el"></div>
+            <div class="eye er"></div>
+            <div class="nose"></div>
+            <div class="mouth"></div>
+            <div class="blush bl"></div>
+            <div class="blush br"></div>
+            <div class="bow-wrap"><div class="bow-l"></div><div class="bow-c"></div><div class="bow-r"></div></div>
+          </div>
+          <div class="arm al"></div>
+          <div class="arm ar"></div>
+          <div class="body"><div class="tummy"></div></div>
+          <div class="leg ll"></div>
+          <div class="leg lr"></div>
+        </div>
+      </div>
+
+      <div id="wish-box">
+        <span>Dear Anusha,</span><br>
+        On your magical birthday, may every star shine<br>
+        just for you 🌟 You deserve all the love,<br>
+        laughter & joy in this world 💖<br>
+        <span>Stay beautiful, stay fabulous! 🎀</span>
+      </div>
+      <div id="emoji-row" style="animation-delay:.5s;">🎂 🎈 🎉 💕 🎊</div>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <p id="popup-msg">🧸 Hi Anusha!<br>I'm your birthday teddy!<br>Sending you the biggest hugs! 💖</p>
+    <button onclick="document.getElementById('popup').style.display='none'">Aww thanks! 💕</button>
+  </div>
+</div>
+
+<audio id="bgm" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"/>
+</audio>
+
+<script>
+var solved=0,total=6,musicOn=false;
+var msgs=["🧸 Hi Anusha! I'm your birthday teddy! 💖","🌸 Anusha, you light up every room!","💕 Wishing you infinite happiness today!","✨ You're one in a billion, Anusha!","🎀 Big hugs from your teddy! 🐻","🌟 Today is YOUR day, Queen!"];
+var mi=0;
+
+function tapTile(i){
+  var btn=document.getElementById('t'+i);
+  if(btn.classList.contains('solved'))return;
+  btn.classList.add('solved');
+  solved++;
+  var pct=Math.round(solved/total*100);
+  document.getElementById('puz-bar').style.width=pct+'%';
+  document.getElementById('puz-progress').textContent=solved+' / '+total+' unlocked ✨';
+  burst(btn);
+  if(solved===total){
+    setTimeout(showUnlock,500);
+  }
+}
+
+function showUnlock(){
+  document.getElementById('puzzle-screen').style.display='none';
+  document.getElementById('unlock-screen').style.display='block';
+  bigBurst();
+  var p=0;
+  var iv=setInterval(function(){
+    p+=2;
+    document.getElementById('count-bar').style.width=p+'%';
+    document.getElementById('count-num').textContent=p+'%';
+    if(p>=100){clearInterval(iv);setTimeout(showCard,300);}
+  },28);
+}
+
+function showCard(){
+  document.getElementById('unlock-screen').style.display='none';
+  document.getElementById('card-screen').style.display='block';
+  bigBurst();
+  if(!musicOn){
+    document.getElementById('bgm').play().catch(function(){});
+    document.getElementById('music-btn').textContent='🔇';
+    musicOn=true;
+  }
+}
+
+function teddyTap(){
+  var popup=document.getElementById('popup');
+  var pmsg=document.getElementById('popup-msg');
+  pmsg.innerHTML=msgs[mi%msgs.length];
+  mi++;
+  popup.style.display='block';
+  bigBurst();
+}
+
+function burst(el){
+  var app=document.getElementById('app');
+  var colors=["#ff4d9a","#a855f7","#facc15","#22d3ee","#ff9de2","#4ade80"];
+  for(var i=0;i<10;i++){
+    var c=document.createElement('div');
+    c.className='conf';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left='45%';c.style.top='40%';
+    var a=Math.random()*360,d=50+Math.random()*90;
+    c.style.setProperty('--cx',Math.cos(a)*d+'px');
+    c.style.setProperty('--cy',(-(40+Math.random()*80))+'px');
+    c.style.animation='cburst '+(0.6+Math.random()*.5)+'s ease forwards';
+    app.appendChild(c);
+    setTimeout(function(x){if(x.parentNode)x.parentNode.removeChild(x);},1200,c);
+  }
+}
+
+function bigBurst(){
+  var app=document.getElementById('app');
+  var colors=["#ff4d9a","#a855f7","#facc15","#22d3ee","#ff9de2","#4ade80","#ff1493","#fff"];
+  for(var i=0;i<28;i++){
+    var c=document.createElement('div');
+    c.className='conf';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=(20+Math.random()*60)+'%';
+    c.style.top='45%';
+    var a=Math.random()*360,d=60+Math.random()*130;
+    c.style.setProperty('--cx',Math.cos(a)*d+'px');
+    c.style.setProperty('--cy',(-(60+Math.random()*120))+'px');
+    c.style.animation='cburst '+(0.8+Math.random()*.6)+'s ease forwards';
+    app.appendChild(c);
+    setTimeout(function(x){if(x.parentNode)x.parentNode.removeChild(x);},1500,c);
+  }
+}
+
+function toggleMusic(){
+  var btn=document.getElementById('music-btn');
+  var bgm=document.getElementById('bgm');
+  if(musicOn){bgm.pause();btn.textContent='🎵';musicOn=false;}
+  else{bgm.play().catch(function(){});btn.textContent='🔇';musicOn=true;}
+}
+</script>
